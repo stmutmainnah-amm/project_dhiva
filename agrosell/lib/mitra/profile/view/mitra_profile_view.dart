@@ -1,6 +1,28 @@
+import 'package:agrosell/mitra/po/view/detail_po_view.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../viewmodel/mitra_profile_viewmodel.dart';
+import '../../payment/view/payment_view.dart';
+import '../../process/view/process_status_view.dart';
+import '../../detail_po/view/detail_po_view.dart'; // Pastikan import ini ada
+import '../../po/view/form_po_view.dart'; // Import FormPO widget jika belum
+
+// Label status pembayaran dinamis sesuai kategori
+String _getPaymentLabel(String? category) {
+  final name = (category ?? '').toLowerCase();
+  if (name.contains('jagung') || name.contains('corn')) {
+    return 'Status Pembayaran Jagung';
+  }
+  if (name.contains('cabai') ||
+      name.contains('chili') ||
+      name.contains('cabe')) {
+    return 'Status Pembayaran Cabai';
+  }
+  if (name.contains('padi') || name.contains('rice')) {
+    return 'Status Pembayaran Padi';
+  }
+  return 'Status Pembayaran';
+}
 
 class MitraProfileView extends StatefulWidget {
   const MitraProfileView({super.key});
@@ -42,20 +64,34 @@ class _MitraProfileViewState extends State<MitraProfileView> {
           ? Center(child: CircularProgressIndicator(color: AppColors.primary))
           : CustomScrollView(
               slivers: [
-                SliverAppBar(
-                  automaticallyImplyLeading: false, 
-                  backgroundColor: AppColors.background,
-                  elevation: 0,
-                  pinned: false,
-                  toolbarHeight: 0,
-                  flexibleSpace: _buildHeaderTitle(),
+                // Tulisan 'Profile' di kiri atas
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      top: 32,
+                      bottom: 0,
+                    ),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Profile',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-
                 // Bagian Profile Header
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0, vertical: 15),
+                      horizontal: 20.0,
+                      vertical: 15,
+                    ),
                     child: _buildProfileHeaderCard(),
                   ),
                 ),
@@ -64,7 +100,11 @@ class _MitraProfileViewState extends State<MitraProfileView> {
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.only(
-                        left: 20, right: 20, top: 10, bottom: 5),
+                      left: 20,
+                      right: 20,
+                      top: 10,
+                      bottom: 5,
+                    ),
                     child: Text(
                       'Pesanan Saya',
                       style: TextStyle(
@@ -76,49 +116,92 @@ class _MitraProfileViewState extends State<MitraProfileView> {
                   ),
                 ),
                 SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20.0, vertical: 8.0),
-                        child: _buildOrderItem(_viewModel.orders[index]),
-                      );
-                    },
-                    childCount: _viewModel.orders.length,
-                  ),
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                        vertical: 8.0,
+                      ),
+                      child: _buildOrderItem(_viewModel.orders[index]),
+                    );
+                  }, childCount: _viewModel.orders.length),
                 ),
 
                 // Section: List & Detail Pre-Order
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.only(
-                        left: 20, right: 20, top: 15, bottom: 5),
-                    child: Text(
-                      'List & Detail Pre-Order',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      left: 20,
+                      right: 20,
+                      top: 15,
+                      bottom: 5,
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          'List & Detail Pre-Order',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.add_circle,
+                            color: AppColors.primary,
+                          ),
+                          tooltip: 'Tambah Pre-Order',
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => Dialog(
+                                insetPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 24,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    final double width = MediaQuery.of(
+                                      context,
+                                    ).size.width;
+                                    return SizedBox(
+                                      width: width > 500 ? 420 : width * 0.95,
+                                      child: SingleChildScrollView(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: FormPOView(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 ),
                 SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20.0, vertical: 8.0),
-                        child: _buildPreOrderItem(_viewModel.preOrders[index]),
-                      );
-                    },
-                    childCount: _viewModel.preOrders.length,
-                  ),
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                        vertical: 8.0,
+                      ),
+                      child: _buildPreOrderItem(_viewModel.preOrders[index]),
+                    );
+                  }, childCount: _viewModel.preOrders.length),
                 ),
 
                 const SliverToBoxAdapter(child: SizedBox(height: 30)),
               ],
             ),
+      // Bottom status bar dihilangkan sesuai permintaan
     );
   }
 
@@ -138,6 +221,8 @@ class _MitraProfileViewState extends State<MitraProfileView> {
       ),
     );
   }
+
+  // BottomNavigationBar dihapus
 
   Widget _buildProfileHeaderCard() {
     return Container(
@@ -183,22 +268,57 @@ class _MitraProfileViewState extends State<MitraProfileView> {
               ),
               Text(
                 _viewModel.mitraType,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
               ),
             ],
           ),
           const Spacer(),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.divider),
+          GestureDetector(
+            onTap: () async {
+              final controller = TextEditingController(
+                text: _viewModel.mitraName,
+              );
+              final result = await showDialog<String>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Edit Nama Mitra'),
+                  content: TextField(
+                    controller: controller,
+                    autofocus: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Nama Mitra',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Batal'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (controller.text.trim().isNotEmpty) {
+                          Navigator.of(context).pop(controller.text.trim());
+                        }
+                      },
+                      child: const Text('Simpan'),
+                    ),
+                  ],
+                ),
+              );
+              if (result != null && result.isNotEmpty) {
+                _viewModel.updateMitraName(result);
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.divider),
+              ),
+              child: Icon(Icons.edit, color: AppColors.primary, size: 20),
             ),
-            child: Icon(Icons.edit, color: AppColors.primary, size: 20),
           ),
         ],
       ),
@@ -241,7 +361,10 @@ class _MitraProfileViewState extends State<MitraProfileView> {
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: isPreOrder
                         ? AppColors.secondaryLight
@@ -253,34 +376,42 @@ class _MitraProfileViewState extends State<MitraProfileView> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: isPreOrder ? AppColors.accent : AppColors.primaryDark,
+                      color: isPreOrder
+                          ? AppColors.accent
+                          : AppColors.primaryDark,
                     ),
                   ),
                 ),
                 const Spacer(),
                 // Icon panah yang berputar
                 Icon(
-                  isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                  isExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
                   color: AppColors.textPrimary,
                 ),
               ],
             ),
-            
+
             // Konten Detail (Hanya Muncul saat isExpanded true)
             AnimatedCrossFade(
               duration: const Duration(milliseconds: 300),
               crossFadeState: isExpanded
                   ? CrossFadeState.showSecond
                   : CrossFadeState.showFirst,
-              firstChild: const SizedBox.shrink(), // Widget kosong saat tertutup
+              firstChild:
+                  const SizedBox.shrink(), // Widget kosong saat tertutup
               secondChild: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 15),
                   Divider(height: 1, color: AppColors.divider),
                   const SizedBox(height: 15),
-                  // Timeline Status Pengiriman
-                  _DeliveryStatusTimeline(currentStatus: order.currentStatus),
+                  // Timeline Status Pengiriman (tetap tampil di item: Jagung, Cabai, Padi)
+                  _DeliveryStatusTimeline(
+                    currentStatus: order.currentStatus,
+                    categoryName: order.name,
+                  ),
                 ],
               ),
             ),
@@ -291,59 +422,71 @@ class _MitraProfileViewState extends State<MitraProfileView> {
   }
 
   Widget _buildPreOrderItem(PreOrderItem preOrder) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border.withOpacity(0.5)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow.withOpacity(0.05),
-            spreadRadius: 1,
-            blurRadius: 5,
+    return GestureDetector(
+      onTap: () {
+        // Navigasi ke halaman Detail PO dari item Pre-Order
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DetailPOView(poId: preOrder.id.toString()),
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Gambar produk kecil
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.primaryLight,
-              image: const DecorationImage(
-                image: AssetImage('assets/images/dummy_product_icon.png'),
-                fit: BoxFit.cover,
-              ),
-              border: Border.all(color: AppColors.border),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: AppColors.border.withOpacity(0.5)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadow.withOpacity(0.05),
+              spreadRadius: 1,
+              blurRadius: 5,
             ),
-            child: const Icon(Icons.eco, color: AppColors.textLight, size: 24),
-          ),
-          const SizedBox(width: 15),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                preOrder.name,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+          ],
+        ),
+        child: Row(
+          children: [
+            // Gambar produk kecil
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primaryLight,
+                image: const DecorationImage(
+                  image: AssetImage('assets/images/dummy_product_icon.png'),
+                  fit: BoxFit.cover,
                 ),
+                border: Border.all(color: AppColors.border),
               ),
-              Text(
-                preOrder.harvestTime,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.secondary,
+              child: const Icon(
+                Icons.eco,
+                color: AppColors.textLight,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 15),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  preOrder.name,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+                Text(
+                  preOrder.harvestTime,
+                  style: TextStyle(fontSize: 14, color: AppColors.secondary),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -351,85 +494,135 @@ class _MitraProfileViewState extends State<MitraProfileView> {
 
 class _DeliveryStatusTimeline extends StatelessWidget {
   final OrderStatus currentStatus;
-  const _DeliveryStatusTimeline({required this.currentStatus});
+  final String? categoryName;
+  const _DeliveryStatusTimeline({
+    required this.currentStatus,
+    this.categoryName,
+  });
+
+  // Tambahkan fungsi isStepDone
+  bool isStepDone(OrderStatus step) {
+    return currentStatus.index > step.index;
+  }
 
   @override
   Widget build(BuildContext context) {
     final Color activeColor = AppColors.primary;
     final Color inactiveColor = AppColors.divider;
 
-    bool isPaymentActive = currentStatus.index >= OrderStatus.paymentStatus.index;
-    bool isInProcessActive = currentStatus.index >= OrderStatus.inProcess.index;
-    bool isShippedActive = currentStatus.index >= OrderStatus.shipped.index;
+    // Tambahkan deklarasi isPaymentDone
+    final bool isPaymentDone =
+        currentStatus.index > OrderStatus.paymentStatus.index;
+    final bool isInProcessActive =
+        currentStatus.index >= OrderStatus.inProcess.index;
+    final bool isShippedActive =
+        currentStatus.index >= OrderStatus.shipped.index;
 
-    // Garis yang menghubungkan
-    Widget line(bool isActive) => Expanded(
-          child: Container(
-            height: 2,
-            color: isActive ? activeColor : inactiveColor,
-          ),
-        );
+    // Deklarasi ulang isPaymentActive agar tidak error
+    final bool isPaymentActive =
+        currentStatus.index >= OrderStatus.paymentStatus.index;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 1. Status Pembayaran (KLIK -> /payment-status)
+        // 1. Sudah Bayar / Status Pembayaran
         GestureDetector(
           onTap: () {
-            // Navigasi ke halaman status pembayaran
-            Navigator.pushNamed(context, '/payment-status');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => PaymentView(categoryName: categoryName),
+              ),
+            );
           },
           child: _StatusStep(
-            label: 'Status Pembayaran',
-            iconWidget: Icon(
-              Icons.payments_outlined,
-              size: 20, 
-              color: isPaymentActive ? activeColor : inactiveColor,
-            ),
+            label: isPaymentDone
+                ? 'Sudah Bayar'
+                : _getPaymentLabel(categoryName),
+            iconWidget: isPaymentDone
+                ? Icon(Icons.check_circle, size: 20, color: activeColor)
+                : Icon(
+                    Icons.payments_outlined,
+                    size: 20,
+                    color: isPaymentActive ? activeColor : inactiveColor,
+                  ),
             isActive: isPaymentActive,
             activeColor: activeColor,
             inactiveColor: inactiveColor,
           ),
         ),
-
         // Garis 1 -> 2
-        line(isInProcessActive),
-
-        // 2. Sedang Diproses (KLIK -> /process-status)
+        Expanded(
+          child: Align(
+            alignment: Alignment.center,
+            child: Container(
+              height: 2,
+              margin: const EdgeInsets.only(top: 18),
+              color: isInProcessActive ? activeColor : inactiveColor,
+            ),
+          ),
+        ),
+        // 2. Sedang Diproses
         GestureDetector(
           onTap: () {
-            // Navigasi ke halaman detail pemrosesan
-            Navigator.pushNamed(context, '/process-status');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ProcessStatusView(categoryName: categoryName),
+              ),
+            );
           },
           child: _StatusStep(
             label: 'Sedang Diproses',
-            iconWidget: Icon(
-              Icons.all_inbox_outlined,
-              size: 20, 
-              color: isInProcessActive ? activeColor : inactiveColor,
-            ),
+            iconWidget: currentStatus == OrderStatus.inProcess
+                ? Icon(Icons.all_inbox_outlined, size: 20, color: activeColor)
+                : (currentStatus.index > OrderStatus.inProcess.index
+                      ? Icon(Icons.check_circle, size: 20, color: activeColor)
+                      : Icon(
+                          Icons.all_inbox_outlined,
+                          size: 20,
+                          color: inactiveColor,
+                        )),
             isActive: isInProcessActive,
             activeColor: activeColor,
             inactiveColor: inactiveColor,
           ),
         ),
-
         // Garis 2 -> 3
-        line(isShippedActive),
-
-        // 3. Dikirim (KLIK -> /delivery-status)
-        GestureDetector(
-          onTap: () {
-            // Navigasi ke halaman status pengiriman
-            Navigator.pushNamed(context, '/delivery-status');
-          },
-          child: _StatusStep(
-            label: 'Dikirim',
-            iconWidget: Icon(
-              Icons.local_shipping_outlined,
-              size: 20, 
+        Expanded(
+          child: Align(
+            alignment: Alignment.center,
+            child: Container(
+              height: 2,
+              margin: const EdgeInsets.only(top: 18),
               color: isShippedActive ? activeColor : inactiveColor,
             ),
+          ),
+        ),
+        // 3. Dikirim
+        GestureDetector(
+          onTap: () {
+            // TODO: Navigasi ke halaman pengiriman jika ada
+          },
+          child: _StatusStep(
+            label: currentStatus == OrderStatus.shipped
+                ? 'Sedang Dikirim'
+                : (currentStatus.index > OrderStatus.shipped.index
+                      ? 'Tiba'
+                      : 'Dikirim'),
+            iconWidget: currentStatus == OrderStatus.shipped
+                ? Icon(
+                    Icons.local_shipping_outlined,
+                    size: 20,
+                    color: activeColor,
+                  )
+                : (currentStatus.index > OrderStatus.shipped.index
+                      ? Icon(Icons.check_circle, size: 20, color: activeColor)
+                      : Icon(
+                          Icons.local_shipping_outlined,
+                          size: 20,
+                          color: inactiveColor,
+                        )),
             isActive: isShippedActive,
             activeColor: activeColor,
             inactiveColor: inactiveColor,
@@ -439,7 +632,6 @@ class _DeliveryStatusTimeline extends StatelessWidget {
     );
   }
 }
-
 
 class _StatusStep extends StatelessWidget {
   final String label;
@@ -476,16 +668,16 @@ class _StatusStep extends StatelessWidget {
         const SizedBox(height: 5),
         // Teks Status
         Container(
-           constraints: const BoxConstraints(maxWidth: 80),
-           child: Text(
-             label,
-             textAlign: TextAlign.center,
-             style: TextStyle(
-               fontSize: 10,
-               color: color,
-               fontWeight: FontWeight.w500,
-             ),
-           ),
+          constraints: const BoxConstraints(maxWidth: 80),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 10,
+              color: color,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
       ],
     );

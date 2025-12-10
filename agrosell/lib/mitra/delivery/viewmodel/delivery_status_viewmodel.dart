@@ -6,9 +6,7 @@ class DeliveryStatusView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Lacak Delivery"),
-      ),
+      appBar: AppBar(title: const Text("Lacak Delivery")),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -17,7 +15,10 @@ class DeliveryStatusView extends StatelessWidget {
             children: [
               // Horizontal Delivery Timeline
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
@@ -47,10 +48,7 @@ class DeliveryStatusView extends StatelessWidget {
                           const SizedBox(height: 8),
                           const Text(
                             "Sedang",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
                           ),
                           const Text(
                             "Dikirim",
@@ -63,15 +61,12 @@ class DeliveryStatusView extends StatelessWidget {
                         ],
                       ),
                     ),
-                    
+
                     // Garis penghubung 1
                     Expanded(
-                      child: Container(
-                        height: 2,
-                        color: Colors.grey[300],
-                      ),
+                      child: Container(height: 2, color: Colors.grey[300]),
                     ),
-                    
+
                     // Dikirim
                     Expanded(
                       child: Column(
@@ -82,7 +77,10 @@ class DeliveryStatusView extends StatelessWidget {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.white,
-                              border: Border.all(color: Colors.grey[400]!, width: 2),
+                              border: Border.all(
+                                color: Colors.grey[400]!,
+                                width: 2,
+                              ),
                             ),
                             child: Icon(
                               Icons.local_shipping_outlined,
@@ -93,23 +91,17 @@ class DeliveryStatusView extends StatelessWidget {
                           const SizedBox(height: 8),
                           const Text(
                             "Menuju Alamatmu",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
                           ),
                         ],
                       ),
                     ),
-                    
+
                     // Garis penghubung 3
                     Expanded(
-                      child: Container(
-                        height: 2,
-                        color: Colors.grey[300],
-                      ),
+                      child: Container(height: 2, color: Colors.grey[300]),
                     ),
-                    
+
                     // Selesai
                     Expanded(
                       child: Column(
@@ -120,7 +112,10 @@ class DeliveryStatusView extends StatelessWidget {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.white,
-                              border: Border.all(color: Colors.grey[400]!, width: 2),
+                              border: Border.all(
+                                color: Colors.grey[400]!,
+                                width: 2,
+                              ),
                             ),
                             child: Icon(
                               Icons.check_circle_outline,
@@ -131,10 +126,7 @@ class DeliveryStatusView extends StatelessWidget {
                           const SizedBox(height: 8),
                           const Text(
                             "Selesai",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
                           ),
                         ],
                       ),
@@ -142,14 +134,14 @@ class DeliveryStatusView extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Divider
               const Divider(thickness: 1),
-              
+
               const SizedBox(height: 16),
-              
+
               // Order Details with Image
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,9 +161,9 @@ class DeliveryStatusView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(width: 16),
-                  
+
                   // Order Details
                   Expanded(
                     child: Column(
@@ -179,10 +171,7 @@ class DeliveryStatusView extends StatelessWidget {
                       children: [
                         const Text(
                           "Barang Pesanan",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
                         ),
                         const SizedBox(height: 4),
                         const Text(
@@ -193,13 +182,10 @@ class DeliveryStatusView extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        
+
                         const Text(
                           "Jumlah Pesanan",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
                         ),
                         const SizedBox(height: 4),
                         const Text(
@@ -210,13 +196,10 @@ class DeliveryStatusView extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        
+
                         const Text(
                           "Total Harga",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
                         ),
                         const SizedBox(height: 4),
                         const Text(
@@ -232,25 +215,22 @@ class DeliveryStatusView extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 20),
-              
+
               // Divider
               const Divider(thickness: 1),
-              
+
               const SizedBox(height: 20),
-              
+
               // Order Timeline (Vertical)
               const Text(
                 "Rincian Pesanan",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               const TimelineItem(
                 time: "25 Nov 17:43",
                 description: "Pesanan tiba di alamat tujuan.",
@@ -263,7 +243,8 @@ class DeliveryStatusView extends StatelessWidget {
               ),
               const TimelineItem(
                 time: "25 Nov 17:19",
-                description: "Pesanan telah diserahkan ke jasa kirim untuk diproses.",
+                description:
+                    "Pesanan telah diserahkan ke jasa kirim untuk diproses.",
                 isActive: true,
               ),
               const TimelineItem(
@@ -273,7 +254,8 @@ class DeliveryStatusView extends StatelessWidget {
               ),
               const TimelineItem(
                 time: "25 Nov 16:50",
-                description: "Pengirim telah mengatur pengiriman. Menunggu pesanan diserahkan ke pihak jasa kirim.",
+                description:
+                    "Pengirim telah mengatur pengiriman. Menunggu pesanan diserahkan ke pihak jasa kirim.",
                 isActive: true,
               ),
               const TimelineItem(
@@ -281,20 +263,17 @@ class DeliveryStatusView extends StatelessWidget {
                 description: "Pesanan Dibuat",
                 isActive: true,
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Address Section
               const Text(
                 "Alamat Detail",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -319,7 +298,7 @@ class DeliveryStatusView extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
             ],
           ),
@@ -333,7 +312,7 @@ class TimelineItem extends StatelessWidget {
   final String time;
   final String description;
   final bool isActive;
-  
+
   const TimelineItem({
     super.key,
     required this.time,
@@ -367,9 +346,9 @@ class TimelineItem extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(width: 12),
-          
+
           // Content
           Expanded(
             child: Column(
@@ -377,18 +356,10 @@ class TimelineItem extends StatelessWidget {
               children: [
                 Text(
                   time,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: const TextStyle(
-                    fontSize: 15,
-                  ),
-                ),
+                Text(description, style: const TextStyle(fontSize: 15)),
               ],
             ),
           ),

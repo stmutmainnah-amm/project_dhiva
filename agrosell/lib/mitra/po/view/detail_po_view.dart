@@ -3,9 +3,9 @@ import '../../../../core/theme/app_colors.dart';
 import '../viewmodel/pre_order_model.dart';
 
 class DetailPOView extends StatefulWidget {
-  final String poId;
+  final String? poId;
 
-  const DetailPOView({super.key, required this.poId});
+  const DetailPOView({super.key, this.poId});
 
   @override
   State<DetailPOView> createState() => _DetailPOViewState();
@@ -30,16 +30,31 @@ class _DetailPOViewState extends State<DetailPOView> {
 
     setState(() {
       _poDetail = PreOrderModel(
-        id: widget.poId,
+        id: widget.poId ?? 'PO-UNDEFINED',
         supplierName: 'Supplier A',
         orderDate: DateTime(2024, 1, 15),
         deliveryDate: DateTime(2024, 1, 25),
         totalAmount: 5000000,
         status: 'approved',
         items: [
-          POItem(productName: 'Product A', quantity: 100, price: 20000, unit: 'pcs'),
-          POItem(productName: 'Product B', quantity: 50, price: 60000, unit: 'pcs'),
-          POItem(productName: 'Product C', quantity: 75, price: 35000, unit: 'pcs'),
+          POItem(
+            productName: 'Product A',
+            quantity: 100,
+            price: 20000,
+            unit: 'pcs',
+          ),
+          POItem(
+            productName: 'Product B',
+            quantity: 50,
+            price: 60000,
+            unit: 'pcs',
+          ),
+          POItem(
+            productName: 'Product C',
+            quantity: 75,
+            price: 35000,
+            unit: 'pcs',
+          ),
         ],
       );
       _isLoading = false;
@@ -50,23 +65,15 @@ class _DetailPOViewState extends State<DetailPOView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detail PO: ${widget.poId}'),
+        title: const Text('Detail Pre-Order'),
         backgroundColor: AppColors.primary,
-        actions: [
-          if (_poDetail != null)
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () {
-                // Navigasi ke form edit
-              },
-            ),
-        ],
+        actions: const [],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _poDetail == null
-              ? const Center(child: Text('Data tidak ditemukan'))
-              : _buildDetailContent(),
+          ? const Center(child: Text('Data tidak ditemukan'))
+          : _buildDetailContent(),
     );
   }
 
@@ -78,6 +85,8 @@ class _DetailPOViewState extends State<DetailPOView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header gambar dihapus sesuai permintaan
+          const SizedBox(height: 16),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -87,39 +96,32 @@ class _DetailPOViewState extends State<DetailPOView> {
                   _buildDetailRow('ID PO', po.id),
                   _buildDetailRow('Supplier', po.supplierName),
                   _buildDetailRow('Tanggal Pesan', _formatDate(po.orderDate)),
-                  _buildDetailRow('Tanggal Kirim', _formatDate(po.deliveryDate)),
-                  _buildDetailRow('Total', 'Rp ${po.totalAmount.toStringAsFixed(0)}'),
-                  _buildStatusBadge(po.status),
+                  _buildDetailRow(
+                    'Tanggal Kirim',
+                    _formatDate(po.deliveryDate),
+                  ),
+                  _buildDetailRow(
+                    'Total',
+                    'Rp ${po.totalAmount.toStringAsFixed(0)}',
+                  ),
+                  const SizedBox(height: 8),
+                  // Informasi jadwal panen & kondisi panen saat ini
+                  Text(
+                    'Informasi Panen',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildDetailRow('Jadwal Panen', _getHarvestSchedule()),
+                  _buildDetailRow('Kondisi Panen', _getHarvestCondition()),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 24),
-          Text(
-            'Item Produk',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 12),
-          ...po.items.map((item) => _buildItemCard(item)),
-          const SizedBox(height: 32),
-          if (po.status == 'pending')
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () async {
-                  // Logic approve
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.success,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text('Setujui PO'),
-              ),
-            ),
         ],
       ),
     );
@@ -150,44 +152,9 @@ class _DetailPOViewState extends State<DetailPOView> {
     );
   }
 
-  Widget _buildStatusBadge(String status) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: _getStatusColor(status).withOpacity(0.1),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: _getStatusColor(status)),
-        ),
-        child: Text(
-          status.toUpperCase(),
-          style: TextStyle(
-            color: _getStatusColor(status),
-            fontWeight: FontWeight.bold,
-            fontSize: 12,
-          ),
-        ),
-      ),
-    );
-  }
+  // Badge status dihapus sesuai permintaan
 
-  Widget _buildItemCard(POItem item) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        title: Text(item.productName),
-        subtitle: Text('${item.quantity} ${item.unit}'),
-        trailing: Text(
-          'Rp ${(item.price * item.quantity).toStringAsFixed(0)}',
-          style: TextStyle(
-            color: AppColors.primary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
+  // Item produk dihilangkan sesuai permintaan
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
@@ -205,4 +172,23 @@ class _DetailPOViewState extends State<DetailPOView> {
         return AppColors.textSecondary;
     }
   }
+
+  // Jadwal panen dan kondisi panen dummy yang relevan untuk demo UI
+  String _getHarvestSchedule() {
+    // Contoh: gunakan tanggal kirim sebagai estimasi panen - 2 hari
+    final po = _poDetail!;
+    final estimate = po.deliveryDate.subtract(const Duration(days: 2));
+    return '${estimate.day}/${estimate.month}/${estimate.year} (Estimasi)';
+  }
+
+  String _getHarvestCondition() {
+    // Contoh kondisi berdasarkan status PO
+    final status = _poDetail!.status;
+    if (status == 'approved') return 'Siap panen dalam beberapa hari';
+    if (status == 'pending') return 'Dalam persiapan, monitoring cuaca';
+    if (status == 'rejected') return 'Tertunda, menunggu konfirmasi ulang';
+    return 'Normal';
+  }
+
+  // Gambar kategori dihapus
 }

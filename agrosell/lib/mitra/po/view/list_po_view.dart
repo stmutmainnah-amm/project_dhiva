@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../viewmodel/pre_order_model.dart';
+import 'detail_po_view.dart';
 
 class ListPOViewModel extends ChangeNotifier {
   List<PreOrderModel> _poList = [];
@@ -31,7 +32,12 @@ class ListPOViewModel extends ChangeNotifier {
         totalAmount: 5000000,
         status: 'approved',
         items: [
-          POItem(productName: 'Product A', quantity: 100, price: 20000, unit: 'pcs'),
+          POItem(
+            productName: 'Product A',
+            quantity: 100,
+            price: 20000,
+            unit: 'pcs',
+          ),
         ],
       ),
       PreOrderModel(
@@ -42,7 +48,12 @@ class ListPOViewModel extends ChangeNotifier {
         totalAmount: 7500000,
         status: 'pending',
         items: [
-          POItem(productName: 'Product B', quantity: 50, price: 150000, unit: 'pcs'),
+          POItem(
+            productName: 'Product B',
+            quantity: 50,
+            price: 150000,
+            unit: 'pcs',
+          ),
         ],
       ),
     ];
@@ -66,7 +77,7 @@ class ListPOView extends StatefulWidget {
 
 class _ListPOViewState extends State<ListPOView> {
   final ListPOViewModel _viewModel = ListPOViewModel();
-  
+
   @override
   void initState() {
     super.initState();
@@ -75,13 +86,13 @@ class _ListPOViewState extends State<ListPOView> {
       _viewModel.fetchPOList();
     });
   }
-  
+
   void _onViewModelChanged() {
     if (mounted) {
       setState(() {});
     }
   }
-  
+
   @override
   void dispose() {
     _viewModel.removeListener(_onViewModelChanged);
@@ -94,10 +105,11 @@ class _ListPOViewState extends State<ListPOView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Daftar Purchase Order'),
-        backgroundColor: AppColors.primary, // FIX: primary bukan primaryColor
+        backgroundColor: AppColors.primary,
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
+            tooltip: 'Tambah',
             onPressed: () {
               Navigator.pushNamed(context, '/po-form');
             },
@@ -149,9 +161,7 @@ class _ListPOViewState extends State<ListPOView> {
 
   Widget _buildPOList() {
     if (_viewModel.poList.isEmpty) {
-      return const Center(
-        child: Text('Tidak ada data PO'),
-      );
+      return const Center(child: Text('Tidak ada data PO'));
     }
 
     return ListView.builder(
@@ -162,11 +172,15 @@ class _ListPOViewState extends State<ListPOView> {
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
           child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: _getStatusColor(po.status),
-              child: Text(
-                po.id.split('-').last,
-                style: const TextStyle(color: Colors.white),
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                width: 48,
+                height: 48,
+                child: Image.network(
+                  _getCategoryThumbUrl(po),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             title: Text(po.supplierName),
@@ -183,10 +197,9 @@ class _ListPOViewState extends State<ListPOView> {
               color: AppColors.primary, // FIX
             ),
             onTap: () {
-              Navigator.pushNamed(
+              Navigator.push(
                 context,
-                '/po-detail',
-                arguments: po.id,
+                MaterialPageRoute(builder: (_) => DetailPOView(poId: po.id)),
               );
             },
           ),
@@ -206,5 +219,26 @@ class _ListPOViewState extends State<ListPOView> {
       default:
         return AppColors.textSecondary;
     }
+  }
+
+  String _getCategoryThumbUrl(PreOrderModel po) {
+    // Gunakan supplierName dulu (bisa berisi nama komoditas), lalu item pertama
+    final fromSupplier = po.supplierName.toLowerCase().trim();
+    final fromItem = po.items.isNotEmpty
+        ? po.items.first.productName.toLowerCase().trim()
+        : '';
+    final name = fromSupplier.isNotEmpty ? fromSupplier : fromItem;
+    if (name.contains('jagung') || name.contains('corn')) {
+      return 'https://images.unsplash.com/photo-1604335399105-1f91c5b1d9f8?q=80&w=200&auto=format&fit=crop';
+    }
+    if (name.contains('cabai') ||
+        name.contains('chili') ||
+        name.contains('cabe')) {
+      return 'https://www.shutterstock.com/shutterstock/photos/2556563607/display_1500/stock-photo-bird-s-eye-chili-or-thai-chili-background-texture-top-view-bird-s-eye-chili-in-supermarket-photo-2556563607.jpg';
+    }
+    if (name.contains('padi') || name.contains('rice')) {
+      return 'https://images.unsplash.com/photo-1504274066651-8d31a536b11e?q=80&w=200&auto=format&fit=crop';
+    }
+    return 'https://picsum.photos/200';
   }
 }

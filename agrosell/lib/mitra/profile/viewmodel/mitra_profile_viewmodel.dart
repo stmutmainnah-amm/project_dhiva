@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 // --- ENUM untuk Status Pengiriman (Timeline) ---
 enum OrderStatus {
   paymentStatus, // Status Pembayaran
-  inProcess,     // Sedang Diproses (Tahap 2)
-  shipped,       // Dikirim (Tahap 3)
+  inProcess, // Sedang Diproses (Tahap 2)
+  shipped, // Dikirim (Tahap 3)
 }
 
 // --- MODEL DATA PESANAN ---
@@ -46,7 +46,7 @@ class MitraProfileViewModel extends ChangeNotifier {
   List<OrderItem> _orders = [];
   List<PreOrderItem> _preOrders = [];
   bool _isLoading = false;
-  
+
   // State baru untuk melacak pesanan yang diperluas
   final Set<String> _expandedOrderIds = {};
 
@@ -55,7 +55,7 @@ class MitraProfileViewModel extends ChangeNotifier {
   List<OrderItem> get orders => _orders;
   List<PreOrderItem> get preOrders => _preOrders;
   bool get isLoading => _isLoading;
-  
+
   // Getter untuk memeriksa status expand
   bool isExpanded(String orderId) => _expandedOrderIds.contains(orderId);
 
@@ -94,7 +94,7 @@ class MitraProfileViewModel extends ChangeNotifier {
     _preOrders = [
       PreOrderItem(
         id: '1',
-        name: 'Padi segar mayur',
+        name: 'Padi ',
         harvestTime: 'Panen dalam waktu 2 bulan',
         imageUrl: 'assets/images/rice_field.png',
       ),

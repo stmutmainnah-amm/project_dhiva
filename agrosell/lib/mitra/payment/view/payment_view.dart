@@ -2,17 +2,87 @@ import 'package:flutter/material.dart';
 
 class PaymentView extends StatefulWidget {
   final bool isPreOrder;
+  final String? categoryName;
 
-  const PaymentView({
-    super.key,
-    this.isPreOrder = false,
-  });
+  const PaymentView({super.key, this.isPreOrder = false, this.categoryName});
 
   @override
   State<PaymentView> createState() => _PaymentViewState();
 }
 
 class _PaymentViewState extends State<PaymentView> {
+  Widget _buildDynamicPaymentItemCard() {
+    final name = (widget.categoryName ?? '').toLowerCase();
+    if (name.contains('cabai') ||
+        name.contains('chili') ||
+        name.contains('cabe')) {
+      // Show cabai image
+      return _paymentItemCard(
+        imagePath: "assets/images/cabai.png", // pastikan file ada
+        title: itemTitle,
+        price: itemPrice,
+      );
+    } else if (name.contains('padi') || name.contains('rice')) {
+      // Show text 'Cabai' instead of image
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              alignment: Alignment.center,
+              child: const Text(
+                'Cabai',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF49511B),
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    itemTitle,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF49511B),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    itemPrice,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF7A8C2E),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // Default image
+      return _paymentItemCard(
+        imagePath: "assets/images/farmer.png",
+        title: itemTitle,
+        price: itemPrice,
+      );
+    }
+  }
+
   late String pageTitle;
   late String itemTitle;
   late String itemPrice;
@@ -22,13 +92,44 @@ class _PaymentViewState extends State<PaymentView> {
     super.initState();
     if (widget.isPreOrder) {
       pageTitle = "Status Pembayaran Pre Order";
-      itemTitle = "Padi segar mayur";
-      itemPrice = "Rp. 10.000.000.000";
+      itemTitle = "Padi Segar";
+      itemPrice = "Rp. 5.000.000";
     } else {
-      pageTitle = "Status Pembayaran";
-      itemTitle = "Beras Organik Premium";
-      itemPrice = "Rp. 5.000.000.000";
+      pageTitle = _getPaymentLabel(widget.categoryName);
+      final name = (widget.categoryName ?? '').toLowerCase();
+      if (name.contains('jagung') || name.contains('corn')) {
+        itemTitle = "Jagung Premium";
+        itemPrice = "Rp. 3.000.000"; // harga pasar jagung
+      } else if (name.contains('cabai') ||
+          name.contains('chili') ||
+          name.contains('cabe')) {
+        itemTitle = "Cabai Merah";
+        itemPrice = "Rp. 8.000.000"; // harga pasar cabai
+      } else if (name.contains('padi') || name.contains('rice')) {
+        itemTitle = "Beras Organik Premium";
+        itemPrice = "Rp. 5.000.000"; // harga pasar padi
+      } else {
+        itemTitle = "Produk Pertanian";
+        itemPrice = "Rp. 1.000.000"; // default harga
+      }
     }
+  }
+
+  // Fungsi helper label dinamis
+  String _getPaymentLabel(String? category) {
+    final name = (category ?? '').toLowerCase();
+    if (name.contains('jagung') || name.contains('corn')) {
+      return 'Status Pembayaran Jagung';
+    }
+    if (name.contains('cabai') ||
+        name.contains('chili') ||
+        name.contains('cabe')) {
+      return 'Status Pembayaran Cabai';
+    }
+    if (name.contains('padi') || name.contains('rice')) {
+      return 'Status Pembayaran Padi';
+    }
+    return 'Status Pembayaran';
   }
 
   @override
@@ -102,11 +203,7 @@ class _PaymentViewState extends State<PaymentView> {
               const SizedBox(height: 16),
 
               // ================= PAYMENT ITEM CARD =================
-              _paymentItemCard(
-                imagePath: "assets/images/farmer.png",
-                title: itemTitle,
-                price: itemPrice,
-              ),
+              _buildDynamicPaymentItemCard(),
               const SizedBox(height: 24),
 
               // ================= DETAIL PESANAN =================
@@ -138,10 +235,7 @@ class _PaymentViewState extends State<PaymentView> {
               const SizedBox(height: 20),
 
               // ================= DIVIDER =================
-              Container(
-                height: 1,
-                color: Colors.grey[300],
-              ),
+              Container(height: 1, color: Colors.grey[300]),
               const SizedBox(height: 20),
 
               // ================= TOTAL =================
@@ -244,10 +338,7 @@ class _PaymentViewState extends State<PaymentView> {
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundImage: AssetImage(imagePath),
-          ),
+          CircleAvatar(radius: 40, backgroundImage: AssetImage(imagePath)),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -285,13 +376,7 @@ class _PaymentViewState extends State<PaymentView> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.grey,
-          ),
-        ),
+        Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
         Text(
           value,
           style: const TextStyle(
@@ -340,10 +425,7 @@ class _PaymentViewState extends State<PaymentView> {
               const SizedBox(height: 4),
               Text(
                 details,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
             ],
           ),

@@ -81,7 +81,7 @@ class _FormPOViewState extends State<FormPOView> {
   void initState() {
     super.initState();
     _viewModel.addListener(_onViewModelChanged);
-    
+
     if (widget.poToEdit != null) {
       _initializeForm();
     }
@@ -92,7 +92,7 @@ class _FormPOViewState extends State<FormPOView> {
     _viewModel.setSupplierName(po.supplierName);
     _viewModel.setOrderDate(po.orderDate);
     _viewModel.setDeliveryDate(po.deliveryDate);
-    
+
     for (var item in po.items) {
       _viewModel.addItem(item);
     }
@@ -161,7 +161,11 @@ class _FormPOViewState extends State<FormPOView> {
                 _clearItemFields();
                 Navigator.pop(context);
               },
-              child: const Text('Tambah'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Tambah ke Daftar'),
             ),
           ],
         );
@@ -178,169 +182,241 @@ class _FormPOViewState extends State<FormPOView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.poToEdit == null ? 'Buat PO Baru' : 'Edit PO'),
-        backgroundColor: AppColors.primary, // FIX: primary bukan primaryColor
-      ),
-      body: SingleChildScrollView(
+    return Material(
+      color: Colors.transparent,
+      child: Container(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextFormField(
-              initialValue: _viewModel.supplierName,
-              decoration: InputDecoration(
-                labelText: 'Nama Supplier',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.poToEdit == null ? 'Buat PO Baru' : 'Edit PO',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              onChanged: _viewModel.setSupplierName,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Masukkan nama supplier';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Tanggal Pesan'),
-                      InkWell(
-                        onTap: () async {
-                          final date = await showDatePicker(
-                            context: context,
-                            initialDate: _viewModel.orderDate,
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime.now().add(const Duration(days: 365)),
-                          );
-                          if (date != null) {
-                            _viewModel.setOrderDate(date);
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.calendar_today,
-                                  color: AppColors.primary), // FIX
-                              const SizedBox(width: 8),
-                              Text(_formatDate(_viewModel.orderDate)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+              const SizedBox(height: 16),
+              TextFormField(
+                initialValue: _viewModel.supplierName,
+                decoration: InputDecoration(
+                  labelText: 'Nama Supplier',
+                  prefixIcon: Icon(Icons.store, color: AppColors.primary),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Tanggal Kirim'),
-                      InkWell(
-                        onTap: () async {
-                          final date = await showDatePicker(
-                            context: context,
-                            initialDate: _viewModel.deliveryDate,
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime.now().add(const Duration(days: 365)),
-                          );
-                          if (date != null) {
-                            _viewModel.setDeliveryDate(date);
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.calendar_today,
-                                  color: AppColors.primary), // FIX
-                              const SizedBox(width: 8),
-                              Text(_formatDate(_viewModel.deliveryDate)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                onChanged: _viewModel.setSupplierName,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Masukkan nama supplier';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                initialValue: '',
+                decoration: InputDecoration(
+                  labelText: 'Nama Mitra',
+                  prefixIcon: Icon(Icons.person, color: AppColors.primary),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Daftar Item',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                initialValue: '',
+                decoration: InputDecoration(
+                  labelText: 'Nomor Telepon',
+                  prefixIcon: Icon(Icons.phone, color: AppColors.primary),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                ElevatedButton.icon(
-                  onPressed: _showAddItemDialog,
-                  icon: const Icon(Icons.add),
-                  label: const Text('Tambah Item'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary, // FIX
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                initialValue: '',
+                decoration: InputDecoration(
+                  labelText: 'Alamat Tujuan',
+                  prefixIcon: Icon(Icons.location_on, color: AppColors.primary),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            _buildItemList(),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _viewModel.isLoading
-                    ? null
-                    : () async {
-                        bool success;
-                        if (widget.poToEdit == null) {
-                          success = await _viewModel.submitPO();
-                        } else {
-                          success = await _viewModel.submitPO();
-                        }
-
-                        if (success && mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(widget.poToEdit == null
-                                  ? 'PO berhasil dibuat'
-                                  : 'PO berhasil diperbarui'),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Tanggal Pesan'),
+                        InkWell(
+                          onTap: () async {
+                            final date = await showDatePicker(
+                              context: context,
+                              initialDate: _viewModel.orderDate,
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime.now().add(
+                                const Duration(days: 365),
+                              ),
+                            );
+                            if (date != null) {
+                              _viewModel.setOrderDate(date);
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                          );
-                          Navigator.pop(context);
-                        }
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary, // FIX
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: _viewModel.isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text(widget.poToEdit == null ? 'Simpan PO' : 'Update PO'),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.calendar_today,
+                                  color: AppColors.primary,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(_formatDate(_viewModel.orderDate)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Tanggal Kirim'),
+                        InkWell(
+                          onTap: () async {
+                            final date = await showDatePicker(
+                              context: context,
+                              initialDate: _viewModel.deliveryDate,
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime.now().add(
+                                const Duration(days: 365),
+                              ),
+                            );
+                            if (date != null) {
+                              _viewModel.setDeliveryDate(date);
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.calendar_today,
+                                  color: AppColors.primary,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(_formatDate(_viewModel.deliveryDate)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 24),
+              // Perbaiki Row agar tidak overflow
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.list_alt, color: AppColors.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Daftar Item',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    onPressed: _showAddItemDialog,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Tambah Item ke Daftar'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Tambah item barang yang akan dipesan pada PO ini. Klik tombol "Tambah Item" untuk memasukkan produk, jumlah, harga, dan satuan.',
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: 12),
+              _buildItemList(),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _viewModel.isLoading
+                      ? null
+                      : () async {
+                          bool success;
+                          if (widget.poToEdit == null) {
+                            success = await _viewModel.submitPO();
+                          } else {
+                            success = await _viewModel.submitPO();
+                          }
+
+                          if (success && mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  widget.poToEdit == null
+                                      ? 'PO berhasil dibuat'
+                                      : 'PO berhasil diperbarui',
+                                ),
+                              ),
+                            );
+                            Navigator.pop(context);
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  icon: const Icon(Icons.save),
+                  label: _viewModel.isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text('Simpan'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -351,9 +427,7 @@ class _FormPOViewState extends State<FormPOView> {
       return const Card(
         child: Padding(
           padding: EdgeInsets.all(32),
-          child: Center(
-            child: Text('Belum ada item ditambahkan'),
-          ),
+          child: Center(child: Text('Belum ada item ditambahkan')),
         ),
       );
     }
@@ -368,7 +442,9 @@ class _FormPOViewState extends State<FormPOView> {
           margin: const EdgeInsets.only(bottom: 8),
           child: ListTile(
             title: Text(item.productName),
-            subtitle: Text('${item.quantity} ${item.unit} @ Rp ${item.price.toStringAsFixed(0)}'),
+            subtitle: Text(
+              '${item.quantity} ${item.unit} @ Rp ${item.price.toStringAsFixed(0)}',
+            ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
